@@ -119,10 +119,10 @@ comments:
     issue_term: # < url | pathname | title | ...>
   # Giscus options › https://giscus.app
   giscus:
-    repo: cseek/cseek.github.io # <gh-username>/<repo>
-    repo_id:
-    category:
-    category_id:
+    repo: "cseek/cseek.github.io" # <gh-username>/<repo>
+    repo_id: "R_kgDOODYu1Q"
+    category: "Announcements"
+    category_id: "DIC_kwDOODYu1c4CnlvB"
     mapping: # optional, default to 'pathname'
     strict: # optional, default to '0'
     input_position: # optional, default to 'bottom'

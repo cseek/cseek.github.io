@@ -64,6 +64,13 @@ sudo apt install bundler
 git commit -m 'feat: hello world'
 类型必须是 [build、chore、ci、docs、feat、fix、perf、refactor、revert、style、test] 之一 [type-enum]
 ```
+
+## Discussion
+评论区配置
+```bash
+https://giscus.app/zh-CN
+```
+
 ## Documentation
 
 To learn how to use, develop, and upgrade the project, please refer to the [Wiki][wiki].
