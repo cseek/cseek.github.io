@@ -11,6 +11,6 @@ pin: true
 media_subpath: '/posts/设计模式'
 ---
 
-## Creating a Site Repository
 
-When creating your site repository, you have two options depending on your needs:
+> When creating your site repository, you have two options depending on your needs:
+{: .prompt-info }
