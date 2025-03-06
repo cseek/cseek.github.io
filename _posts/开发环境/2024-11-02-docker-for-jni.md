@@ -6,7 +6,7 @@ tags: [jni, ndk, android]
 #   path: /assets/img/headers/batcat.webp
 ---
 
-> 在 Jni 开发过程中，可以采用 Docker 搭建编译环境来提升开发效率，减少因环境搭建而浪费时间。
+> 在 Jni 开发过程中，可以采用 Docker 搭建编译环境来提升开发效率，避免因环境搭建而浪费时间。
 {: .prompt-info }
 
 ## 构建 docker 镜像
