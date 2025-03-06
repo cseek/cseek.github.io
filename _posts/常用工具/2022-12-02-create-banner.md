@@ -1,7 +1,7 @@
 ---
 title: figlet 制作 banner 神器
-tags: [banner]
 category: [常用工具]
+tags: [banner]
 # image:
 #     path: /assets/img/headers/figlet.webp
 ---

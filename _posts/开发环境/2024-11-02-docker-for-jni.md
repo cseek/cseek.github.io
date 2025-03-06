@@ -1,7 +1,7 @@
 ---
 title: jni 无图形界面最小编译环境搭建
-tags: [jni, ndk, android]
 category: [开发环境]
+tags: [jni, ndk, android]
 # image:
 #   path: /assets/img/headers/batcat.webp
 ---
