@@ -7,6 +7,10 @@ tags: [freeRTOS, RTOS, 开发资料]
 > todo
 {: .prompt-info }
 
-## DOC
+## 官方文档
 
 `https://www.freertos.org/a00119.html`
+
+## RTThread studio 和 STM32CubeMX 联合开发
+
+`https://blog.csdn.net/qq_40824852/article/details/123067421`
