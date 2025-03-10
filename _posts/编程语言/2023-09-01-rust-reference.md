@@ -6,8 +6,9 @@ tags: [reference, 引用, ref, rust]
 #     path: /assets/img/headers/reference.webp
 ---
 
-在 rust 语言中，有时候使用 ref 来创建一个引用，有时候使用 & 来创建一个引用，二者有什么区别？
+> 在 rust 语言中，有时候使用 ref 来创建一个引用，有时候使用 & 来创建一个引用，二者有什么区别？
 其实在 rust 2018 版本中，通常不需要显式地使用 ref 关键字，直接使用 & 来借用值，ref 主要在 rust 的早期版本中更常用，但在现代 rust 中，直接使用 & 更加普遍和推荐。不过，ref 在某些复杂的模式匹配场景中仍然可以使用，请看下面的代码。
+{: .prompt-info }
 
 ```rust
 fn main() {
