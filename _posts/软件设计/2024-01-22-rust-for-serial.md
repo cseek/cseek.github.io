@@ -1,7 +1,8 @@
 ---
 title: 使用 rust 访问串口
-tags: [串口, serial]
-category: 软件设计
+category: [软件设计]
+tags: [串口, serial, serialport]
+
 # image:
 #     path: /assets/img/headers/rust-serial.webp
 ---
