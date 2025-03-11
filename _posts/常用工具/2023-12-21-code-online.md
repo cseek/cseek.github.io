@@ -1,6 +1,6 @@
 ---
 title: vscode 在线编辑器
-category: [其他]
+category: [常用工具]
 tags: [github, vscode, 在线编辑器]
 ---
 
