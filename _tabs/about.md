@@ -9,5 +9,5 @@ order: 4
 - **邮箱**: jassimxiong@gmail.com
 - **GitHub**: https://github.com/cseek
 
-![](/assets/img/about/about.jpg)
+![](/assets/img/about/about.webp)
 
