@@ -1,7 +1,7 @@
 ---
 title: linux 编译、安装 wifi 驱动
 category: [问题汇总]
-tags: [rtl8852b]
+tags: [rtl8852b, thinkbook14]
 ---
 
 > 最近买了一台联想的 thinkbook14 pro 笔记本，装了 ubuntu22.04 x系统后，发现没有 wifi 驱动，几经周折，终于解决了，下面就把这个方法分享给大家。
