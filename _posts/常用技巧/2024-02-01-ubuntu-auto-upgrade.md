@@ -1,6 +1,6 @@
 ---
 title: 禁止 ubuntu 自动更新的方法
-category: [问题汇总]
+category: [常用技巧]
 tags: [upgrade, update]
 ---
 
