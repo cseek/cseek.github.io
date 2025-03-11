@@ -2,8 +2,6 @@
 title: cmake 导入闭源库
 category: [软件设计]
 tags: [cmake, IMPORTED]
-image:
-    path: /assets/img/headers/cmake.webp
 ---
 
 > 在 cmake 中, IMPORTED 目标是指那些在项目外部预先构建好的库或可执行文件。通过将这些库或可执行文件作为导入的目标引入，可以在项目中使用它们，就像使用项目内构建的目标一样。这样做的好处是可以方便地重用已有的二进制文件，而无需从源代码重新构建它们，这对于依赖于第三方库的项目尤其有用。
