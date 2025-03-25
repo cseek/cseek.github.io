@@ -1,13 +1,13 @@
 ---
-title: Ê¹ÓÃ c++ ÊµÏÖ¶ÔÎÄ¼şÇ©ÃûºÍÑéÖ¤
-category: [Èí¼şÉè¼Æ]
+title: ä½¿ç”¨ c++ å®ç°å¯¹æ–‡ä»¶ç­¾åå’ŒéªŒè¯
+category: [è½¯ä»¶è®¾è®¡]
 tags: [signature, openssl]
 ---
 
-> Ö®Ç°ÔÚÊµÏÖ SOTA Éı¼¶Ö®Ç°Ê¹ÓÃ Python ÊµÏÖÁËÇ©ÃûÈÏÖ¤µÄ¹¦ÄÜ£¬½ñÌì²ÉÓÃ c++ ÖØ¹¹Ö®Ç°µÄ´úÂë£¬·½±ã¼¯³Éµ½ SOTA ´úÂëÀï¡£
+> ä¹‹å‰åœ¨å®ç° SOTA å‡çº§ä¹‹å‰ä½¿ç”¨ Python å®ç°äº†ç­¾åè®¤è¯çš„åŠŸèƒ½ï¼Œä»Šå¤©é‡‡ç”¨ c++ é‡æ„ä¹‹å‰çš„ä»£ç ï¼Œæ–¹ä¾¿é›†æˆåˆ° SOTA ä»£ç é‡Œã€‚
 {: .prompt-info }
 
-## ´úÂë
+## ä»£ç 
 `ec_sig.cpp`
 
 ```c++
@@ -19,7 +19,7 @@ tags: [signature, openssl]
 #include <openssl/ec.h>
 #include <openssl/err.h>
 
-// ´íÎó´¦Àíº¯Êı
+// é”™è¯¯å¤„ç†å‡½æ•°
 void handle_errors(const char* context = nullptr) {
     char buf[1024];
     ERR_error_string_n(ERR_get_error(), buf, sizeof(buf));
@@ -71,7 +71,7 @@ bool ecdsa_sign_file(const char* file_path,
         return false;
     }
 
-    // ¶ÁÈ¡Õû¸öÎÄ¼şµ½ÄÚ´æ£¨ÊÊÓÃÓÚĞ¡ÎÄ¼ş£©
+    // è¯»å–æ•´ä¸ªæ–‡ä»¶åˆ°å†…å­˜ï¼ˆé€‚ç”¨äºå°æ–‡ä»¶ï¼‰
     file.seekg(0, std::ios::end);
     size_t file_size = file.tellg();
     file.seekg(0, std::ios::beg);
@@ -159,21 +159,21 @@ int main() {
     const char* private_key = "ec_private.pem";
     const char* public_key = "ec_public.pem";
     const char* data_file = "document.bin";
-    const char* sig_file = "signature.der"; // ¸ÄÎª .der À©Õ¹Ãû
+    const char* sig_file = "signature.der"; // æ”¹ä¸º .der æ‰©å±•å
 
-    // Éú³ÉÇ©Ãû
+    // ç”Ÿæˆç­¾å
     if (ecdsa_sign_file(data_file, private_key, sig_file)) {
-        std::cout << "\n--- Ç©Ãû³É¹¦ ---" << std::endl;
+        std::cout << "\n--- ç­¾åæˆåŠŸ ---" << std::endl;
     } else {
-        std::cerr << "\n!!! Ç©ÃûÊ§°Ü !!!" << std::endl;
+        std::cerr << "\n!!! ç­¾åå¤±è´¥ !!!" << std::endl;
         return 1;
     }
 
-    // ÑéÖ¤Ç©Ãû
+    // éªŒè¯ç­¾å
     if (ecdsa_verify_signature(data_file, public_key, sig_file)) {
-        std::cout << "\n=== ÑéÖ¤³É¹¦ ===" << std::endl;
+        std::cout << "\n=== éªŒè¯æˆåŠŸ ===" << std::endl;
     } else {
-        std::cerr << "\n!!! ÑéÖ¤Ê§°Ü !!!" << std::endl;
+        std::cerr << "\n!!! éªŒè¯å¤±è´¥ !!!" << std::endl;
         return 1;
     }
 
@@ -181,38 +181,38 @@ int main() {
 }
 ```
 
-## ÑéÖ¤²½Öè
+## éªŒè¯æ­¥éª¤
 
-1. Éú³ÉĞÂÃÜÔ¿¶Ô
+1. ç”Ÿæˆæ–°å¯†é’¥å¯¹
 ```bash
 openssl ecparam -name prime256v1 -genkey -noout -out ec_private.pem
 openssl ec -in ec_private.pem -pubout -out ec_public.pem
 ```
 
-2. ´´½¨²âÊÔÎÄ¼ş
+2. åˆ›å»ºæµ‹è¯•æ–‡ä»¶
 ```bash
 echo "Important Data $(date)" > document.bin
 ```
 
-3. ±àÒë²¢ÔËĞĞ
+3. ç¼–è¯‘å¹¶è¿è¡Œ
 ```bash
 g++ -std=c++11 -Wall ec_sig.cpp -o ec_sig -lssl -lcrypto
 ./ec_sig
 ```
 
-4. ÊÖ¶¯ÑéÖ¤Ç©Ãû
+4. æ‰‹åŠ¨éªŒè¯ç­¾å
 ```bash
-# Éú³ÉÇ©Ãû
+# ç”Ÿæˆç­¾å
 openssl dgst -sha256 -sign ec_private.pem -out openssl_sig.der document.bin
-# ±È½ÏÁ½¸öÇ©ÃûÎÄ¼ş
+# æ¯”è¾ƒä¸¤ä¸ªç­¾åæ–‡ä»¶
 diff signature.der openssl_sig.der
-# Ê¹ÓÃOpenSSLÑéÖ¤
+# ä½¿ç”¨OpenSSLéªŒè¯
 openssl dgst -sha256 -verify ec_public.pem -signature signature.der document.bin
 ```
 
-5. Êä³ö
+5. è¾“å‡º
 ```bash
 Signature generated (72 bytes)
---- Ç©Ãû³É¹¦ ---
-=== ÑéÖ¤³É¹¦ ===
+--- ç­¾åæˆåŠŸ ---
+=== éªŒè¯æˆåŠŸ ===
 ```

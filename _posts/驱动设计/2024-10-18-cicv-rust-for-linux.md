@@ -1,10 +1,10 @@
 ---
 title: rust for linux
-categories: [Çý¶¯Éè¼Æ]
+categories: [é©±åŠ¨è®¾è®¡]
 tags: [rust for linux, r4l, linux, kernel, driver]
 ---
 
-> ÏÂÃæÊÇÎÒÔÚ `¹ú¼ÒÖÇÄÜÍøÁªÆû³µ´´ÐÂÖÐÐÄ & Çå»ª´óÑ§ÊµÑéÊÒ` µÚ¶þÆÚÑµÁ·Óªµ£ÈÎ `¶Î´íÎó` Ð¡¶Ó¶Ó³¤Ê±»ùÓÚ r4l ÄÚºËÇý¶¯¿ò¼ÜÍê³ÉµÄ×÷Òµ
+> ä¸‹é¢æ˜¯æˆ‘åœ¨ `å›½å®¶æ™ºèƒ½ç½‘è”æ±½è½¦åˆ›æ–°ä¸­å¿ƒ & æ¸…åŽå¤§å­¦å®žéªŒå®¤` ç¬¬äºŒæœŸè®­ç»ƒè¥æ‹…ä»» `æ®µé”™è¯¯` å°é˜Ÿé˜Ÿé•¿æ—¶åŸºäºŽ r4l å†…æ ¸é©±åŠ¨æ¡†æž¶å®Œæˆçš„ä½œä¸š
 {: .prompt-info }
 
 https://github.com/cicvedu/cicv-r4l-ziqing-x
