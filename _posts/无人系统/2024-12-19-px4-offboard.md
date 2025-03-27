@@ -49,7 +49,7 @@ Server Address: 启动 PX4 仿真环境的主机 IP
 pip3 install mavsdk
 ```
 + 编写控制飞机飞行轨迹的代码，这里控制飞机飞行圆形轨迹：
-```python
+```bash
 # test_offborad.py
 import time
 import asyncio
