@@ -111,8 +111,8 @@ python3 test_offborad.py
 可以看到，飞机在地图上按照圆形轨迹飞行
 ![](assets/img/post/无人系统/offboard.png)
 
-## 问题解决
-+ 1、setuptools 版本兼容性问题。
+## 7、问题解决
++ setuptools 版本兼容性问题。
 ```bash
 Installing PX4 Python3 dependencies
 Collecting argcomplete (from -r /home/cyber/PX4/PX4-Autopilot/Tools/setup/requirements.txt (line 1))
@@ -171,7 +171,6 @@ error: metadata-generation-failed
 note: This is an issue with the package mentioned above, not pip.
 hint: See above for details.
 ```
-
 解决办法：
 ```bash
 # 强制降级
