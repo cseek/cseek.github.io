@@ -1,5 +1,5 @@
 ---
-title: 通过 offboard 模式控制 px4 四旋翼仿真飞机
+title: px4 的 offboard 模式仿真
 category: [无人系统]
 tags: [px4, offboard, gazebo]
 ---
