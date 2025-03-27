@@ -105,10 +105,10 @@ controller = YawPriorityController()
 asyncio.run(controller.run())
 ```
 在上面的代码中：
-  + forward_m_s: 前进的速度
-  + right_m_s: 往左平移的速度
-  + down_m_s: 飞机下降的速度，为负值则为上升
-  + yawspeed_deg_s: 飞机 yaw 轴的偏转角度，如果设置为正值，从上往下看为顺时针方向偏转，反之则反。
+`forward_m_s`: 前进的速度
+`right_m_s`: 往左平移的速度
+`down_m_s`: 飞机下降的速度，为负值则为上升
+`yawspeed_deg_s`: 飞机 yaw 轴的偏转角度，如果设置为正值，从上往下看为顺时针方向偏转，反之则反。
 
 + 运行代码
 
