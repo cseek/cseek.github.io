@@ -21,7 +21,7 @@ git remote -v
 ## 修改远程地址
 
 ```bash
-git remote set-url origin git@172.29.220.100:uav/gzslamB/GZ_SLAM_Middleware.git
+git remote set-url origin git@ip:your_repo.git
 ```
 
 ## 强制推送所有分支和标签
