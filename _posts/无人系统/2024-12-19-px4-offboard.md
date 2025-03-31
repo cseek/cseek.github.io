@@ -11,7 +11,9 @@ tags: [px4, offboard, gazebo]
 下载地址为[点击下载](https://github.com/mavlink/qgroundcontrol/releases/download/v4.4.4/QGroundControl-installer.exe)
 
 ## 2、克隆 PX4 飞控代码并安装编译环境
+
 本文采用的是 WSL/ubuntu20.04 搭建的环境 
+
 ```bash
 git clone -b v1.15.4 https://github.com/PX4/PX4-Autopilot.git --recursive
 git submodule update --init --recursive
@@ -32,24 +34,29 @@ make px4_sitl_default gazebo
 ```
 
 ## 4、在 PX4 的命令行环境下启动 mavlink 通信
+
 ```bash
 mavlink start -p -o 14550
 ```
 
 ## 5、使用 QGC 连接飞机
-Application Settings -> 通讯连接 -> 添加:
-Name: 随便写一个
-Type：UDP
-Port: 14550
-Server Address: 启动 PX4 仿真环境的主机 IP
++ Application Settings -> 通讯连接 -> 添加:
++ Name: 随便写一个
++ Type：UDP
++ Port: 14550
++ Server Address: 启动 PX4 仿真环境的主机 IP
 
-## 6、使用 mavsdk 发送指令控制 无人机
+## 6、使用 mavsdk 发送指令控制无人机
+
 + 安装 mavsdk:
+
 ```bash
 pip3 install mavsdk
 ```
+
 + 编写控制飞机飞行轨迹的代码，这里控制飞机飞行圆形轨迹：
-```python
+
+```bash
 # test_offborad.py
 import time
 import asyncio
@@ -98,21 +105,22 @@ controller = YawPriorityController()
 asyncio.run(controller.run())
 ```
 在上面的代码中：
-forward_m_s: 前进的速度
-right_m_s: 往左平移的速度
-down_m_s: 飞机下降的速度，为负值则为上升
-yawspeed_deg_s: 飞机 yaw 轴的偏转角度，如果设置为正值，从上往下看为顺时针方向偏转，反之则反。
+`forward_m_s`: 前进的速度;`right_m_s`: 往左平移的速度;`down_m_s`: 飞机下降的速度，为负值则为上升;`yawspeed_deg_s`: 飞机 yaw 轴的偏转角度，如果设置为正值，从上往下看为顺时针方向偏转，反之则反。
 
 + 运行代码
+
 ```bash
 python3 test_offborad.py
 ```
+
 + 观察现象
 可以看到，飞机在地图上按照圆形轨迹飞行
 ![](assets/img/post/无人系统/offboard.png)
 
 ## 7、问题解决
+
 + setuptools 版本兼容性问题。
+
 ```bash
 Installing PX4 Python3 dependencies
 Collecting argcomplete (from -r /home/cyber/PX4/PX4-Autopilot/Tools/setup/requirements.txt (line 1))
@@ -171,7 +179,9 @@ error: metadata-generation-failed
 note: This is an issue with the package mentioned above, not pip.
 hint: See above for details.
 ```
+
 解决办法：
+
 ```bash
 # 强制降级
 python3 -m pip install setuptools==58.2.0
