@@ -63,6 +63,7 @@ spdlog_wraper.h
 #include "spdlog/spdlog.h"
 #include <memory>
 #include <thread>
+#include <iostream>
 
 #define LOG_TAG "myapp"                              // 日志tag
 #define LOG_FILE_NAME "./log/" LOG_TAG ".log"        // 日志文件名
