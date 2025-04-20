@@ -62,7 +62,6 @@ spdlog_wraper.h
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 #include <memory>
-#include <thread>
 #include <iostream>
 
 #define LOG_TAG "myapp"                              // 日志tag
@@ -70,17 +69,17 @@ spdlog_wraper.h
 #define LOG_FILE_SIZE 1024 * 1024 * 3                // 单个日志文件大小为3MB
 #define LOG_ROTATION 10                              // 日志文件满10个时开始滚动日志
 #define LOG_FLUSH_ON spdlog::level::warn             // 当打印这个级别日志时flush
-#define LOG_FLUSH_F 5                                // 5秒flush一次
 #define PATTERN "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v" // 日志样式
 
+// 将数组转成 16 进制，然后再打印输出，
+// 例如: LOGI("{:X}", TO_HEX(data, len));
+#define TO_HEX(data, len) spdlog::to_hex(data, data + len)
+#define LOG_FLUSH Singleton<Logger>::instance().flush()
 #define LOGE(...) Singleton<Logger>::instance().log_error(__VA_ARGS__)
 #define LOGW(...) Singleton<Logger>::instance().log_warn(__VA_ARGS__)
 #define LOGI(...) Singleton<Logger>::instance().log_info(__VA_ARGS__)
 #define LOGD(...) Singleton<Logger>::instance().log_debug(__VA_ARGS__)
 #define LOGC(...) Singleton<Logger>::instance().log_critical(__VA_ARGS__)
-// 将数组转成 16 进制，然后再打印输出，
-// 例如: LOGI("{:X}", TO_HEX(data, len));
-#define TO_HEX(data, len) spdlog::to_hex(data, data + len)
 
 class Logger {
 private:
@@ -88,7 +87,7 @@ private:
 
 private:
     bool is_debug_mode() {
-        char *var = getenv("debug");
+        char *var = getenv("LOG_DEBUG");
         if (nullptr == var) {
             return false;
         }
@@ -100,10 +99,17 @@ private:
 
 public:
     Logger() {
-        auto function = [&](){
+        auto &&function = [&](){
             auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-            auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(LOG_FILE_NAME, LOG_FILE_SIZE, LOG_ROTATION);
-            std::vector<spdlog::sink_ptr> sinks{ stdout_sink, rotating_sink };
+            auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+                LOG_FILE_NAME,
+                LOG_FILE_SIZE,
+                LOG_ROTATION
+            );
+            std::vector<spdlog::sink_ptr> sinks{
+                stdout_sink,
+                rotating_sink
+            };
             m_logger = std::make_unique<spdlog::logger>(LOG_TAG, sinks.begin(), sinks.end());
             m_logger->set_pattern(PATTERN);
             if (is_debug_mode()) {
@@ -118,12 +124,10 @@ public:
         } catch (const std::exception &e) {
             std::cout << "Construct logger error: " << e.what() << std::endl;
         }
-        std::thread([&]() {
-            while (true) {
-                m_logger->flush();
-                std::this_thread::sleep_for(std::chrono::seconds(LOG_FLUSH_F));
-            }
-        }).detach();
+    }
+
+    void flush() {
+        m_logger->flush();
     }
 
     template <typename... Args>
