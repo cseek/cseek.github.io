@@ -74,7 +74,7 @@ spdlog_wraper.h
 // 将数组转成 16 进制，然后再打印输出，
 // 例如: LOGI("{:X}", TO_HEX(data, len));
 #define TO_HEX(data, len) spdlog::to_hex(data, data + len)
-#define LOG_FLUSH Singleton<Logger>::instance().flush()
+#define LOG_FLUSH(...) Singleton<Logger>::instance().flush()
 #define LOGE(...) Singleton<Logger>::instance().log_error(__VA_ARGS__)
 #define LOGW(...) Singleton<Logger>::instance().log_warn(__VA_ARGS__)
 #define LOGI(...) Singleton<Logger>::instance().log_info(__VA_ARGS__)
