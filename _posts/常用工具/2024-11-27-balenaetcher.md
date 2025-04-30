@@ -15,4 +15,3 @@ tags: [etcher, 镜像烧写工具]
 ## 官网截图
 
 ![](/assets/img/post/常用工具/etcher.webp)
-![](/assets/img/post/常用工具/etcher1.webp)
