@@ -18,6 +18,10 @@ gpiodetect
 gpioinfo 0
 # 控制 GPIO
 sudo gpioset 0 17=1
+# 设置io电平，并保持，直到ctrl + c或者 回车
+sudo gpioset -m wait gpiochip0 43=0
+# 查看 gpio 的电平状态
+cat /sys/kernel/debug/gpio
 ```
 ## 通过引脚对照表找到引脚对应的 GPIO 编号
 
