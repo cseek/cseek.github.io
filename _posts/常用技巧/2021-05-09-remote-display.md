@@ -4,6 +4,9 @@ category: [常用技巧]
 tags: [xserver, display]
 ---
 
+> 有时候有的 Linux 设备没有 HDMI 想要可视化调试很不方便，通常可以使用远程桌面或者 Xserver 的方式来实现可视化；下面就以 Xserver 的方式做简要记录。
+{: .prompt-info }
+
 ## 准备工作
 
 首先，我们需要在自己的电脑上安装一个 mobaxterm, 因为它内置了 xserver， 当然，你也可以安装其他软件，比如 Xming 等等。
