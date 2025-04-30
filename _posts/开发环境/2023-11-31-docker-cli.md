@@ -10,19 +10,22 @@ tags: [docker-cli]
 ## 安装步骤
 
 ```bash
-# 更新存储库
-sudo apt update && sudo apt upgrade
-# 安装依赖
-sudo apt install lsb-release ca-certificates apt-transport-https software-properties-common -y
-# 导入 docker GPG 密钥
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-# 添加官方源
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-# 更新
+# 更新你的包索引：
 sudo apt update
-# 安装
-sudo apt install docker-ce
-
+# 安装必要的依赖：
+sudo apt install lsb-release apt-transport-https ca-certificates curl software-properties-common
+# 添加Docker的官方GPG密钥：
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# 添加Docker仓库：
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+# 再次更新包索引：
+sudo apt-get update
+# 安装Docker CE：
+sudo apt-get install docker-ce
+# 查看Docker服务状态：
+sudo systemctl status docker
+# 设置开机自启动
+sudo systemctl enable docker
 ```
 ## 卸载步骤
 
