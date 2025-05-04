@@ -32,3 +32,15 @@ sudo systemctl enable docker
 ```bash
 sudo apt-get purge docker-ce
 ```
+
+## 使用国内源
++ 添加配置:
+`sudo vim /etc/docker/daemon.json`
+```bash
+{ "registry-mirrors": ["https://docker.1ms.run"] }
+```
++ 重启服务
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
