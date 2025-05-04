@@ -1,10 +1,10 @@
 ---
-title: ubuntu 24.04 永久修改 DNS
+title: Ubuntu 24.04 永久修改 DNS
 category: [开发环境]
 tags: [dns, resolv, nameserver]
 ---
 
-> 在 Ubuntu 24.04 中，直接修改 /etc/resolv.conf 可能因系统服务（如 systemd-resolved 或 NetworkManager）自动覆盖而失效。以下是分步解决方案：。
+> 在 Ubuntu 24.04 中，直接修改 /etc/resolv.conf 可能因系统服务（如 systemd-resolved 或 NetworkManager）自动覆盖而失效。以下是分步解决方案。
 {: .prompt-info }
 
 ## 编辑配置文件
