@@ -16,26 +16,27 @@ tags: [设计模式]
 懒汉式单例: 单例在第一次获取实例的时候才实例化。
 
 ```c++
-#include <iostream>
-#include <string>
+#include <utility>
 
 template<class T>
 class Singleton {
 protected:
     Singleton() = default;
     ~Singleton() = default;
-
-public:
-
     Singleton(const Singleton &) = delete;
     Singleton &operator=(const Singleton &) = delete;
 
+public:
     template<typename... Args>
     static T &instance(Args &&...args) {
-        static T Singleton(std::forward<Args>(args)...);
-        return instance;
+        static T obj(std::forward<Args>(args)...);
+        return obj;
     }
 };
+
+
+#include <iostream>
+#include <string>
 
 class MyClass {
 public:
