@@ -6,7 +6,7 @@ tags: [安全队列, queue]
 > 线程安全队列常用于 "生产者-消费者模型"， 下面是我常用的实现方式。
 {: .prompt-info }
 
-## 阻塞版安全队列
+## 安全队列
 
 ```c++
 #ifndef __SAFE_QUEUE_H__
@@ -132,3 +132,7 @@ private:
 
 #endif // __SAFE_QUEUE_H__
 ```
+
+## 用法
+
+参见 [test_safe_queue.cpp](https://github.com/cseek/xdemo_sdk/blob/main/test/test_safe_queue.cpp)
