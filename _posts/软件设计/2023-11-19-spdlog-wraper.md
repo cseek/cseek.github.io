@@ -49,7 +49,7 @@ public:
 #endif // __SINGLETON_H__
 
 ```c++
-// spdlog_wraper.h
+// spdlog.h
 
 #ifndef __LOGGER_H__
 #define __LOGGER_H__
@@ -66,31 +66,21 @@ public:
 /* 将数组转成 16 进制，然后再打印输出，
  * 例如: LOGI("{:X}", TO_HEX(data, len));*/
 #define TO_HEX(data, len) spdlog::to_hex(data, data + len)
-#define SDK_LOGE(...) Singleton<Logger>::instance("sdk").log_error(__VA_ARGS__)
-#define SDK_LOGW(...) Singleton<Logger>::instance("sdk").log_warn(__VA_ARGS__)
-#define SDK_LOGI(...) Singleton<Logger>::instance("sdk").log_info(__VA_ARGS__)
-#define SDK_LOGD(...) Singleton<Logger>::instance("sdk").log_debug(__VA_ARGS__)
-#define SDK_LOGC(...) Singleton<Logger>::instance("sdk").log_critical(__VA_ARGS__)
-
-#define APP_LOGE(...) Singleton<Logger>::instance("app").log_error(__VA_ARGS__)
-#define APP_LOGW(...) Singleton<Logger>::instance("app").log_warn(__VA_ARGS__)
-#define APP_LOGI(...) Singleton<Logger>::instance("app").log_info(__VA_ARGS__)
-#define APP_LOGD(...) Singleton<Logger>::instance("app").log_debug(__VA_ARGS__)
-#define APP_LOGC(...) Singleton<Logger>::instance("app").log_critical(__VA_ARGS__)
+#define LOGE(...) Singleton<Logger>::instance().log_error(__VA_ARGS__)
+#define LOGW(...) Singleton<Logger>::instance().log_warn(__VA_ARGS__)
+#define LOGI(...) Singleton<Logger>::instance().log_info(__VA_ARGS__)
+#define LOGD(...) Singleton<Logger>::instance().log_debug(__VA_ARGS__)
+#define LOGC(...) Singleton<Logger>::instance().log_critical(__VA_ARGS__)
 
 class Logger
 {
 private:
-    std::string m_tag;                        // 日志标签
     std::unique_ptr<spdlog::logger> m_logger; // 日志器
 
 public:
     Logger(const Logger &) = delete;
     Logger &operator=(const Logger &) = delete;
-    Logger(const std::string &tag)
-        : m_tag(tag)
-    {
-    }
+    Logger() = default;
     ~Logger()
     {
         if (m_logger)
@@ -99,13 +89,13 @@ public:
         }
     }
 
-    bool init(const std::string &name = "./log/spdlog.log",                      // 日志文件名
+    bool init(const std::string &name,                                           // 日志器名称
+              const std::string &file = "./log/spdlog.log",                      // 日志文件名
               const std::string &pattern = "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v", // 日志样式
               size_t rotation = 4,                                               // 日志文件满4个时开始滚动日志
               size_t file_size = 1024 * 1024 * 6,                                // 单个日志文件大小为6MB
               spdlog::level::level_enum level = spdlog::level::debug,            // 日志级别
               spdlog::level::level_enum flush_on = spdlog::level::warn)          // 当打印这个级别日志时flush
-
     {
         if (m_logger)
         {
@@ -114,9 +104,9 @@ public:
         auto &&function = [&]()
         {
             auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-            auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(name, file_size, rotation);
+            auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(file, file_size, rotation);
             std::vector<spdlog::sink_ptr> sinks{stdout_sink, rotating_sink};
-            m_logger = std::make_unique<spdlog::logger>(m_tag, sinks.begin(), sinks.end());
+            m_logger = std::make_unique<spdlog::logger>(name, sinks.begin(), sinks.end());
             m_logger->set_pattern(pattern);
             m_logger->set_level(level);
             m_logger->flush_on(flush_on);
@@ -206,7 +196,6 @@ public:
         }
     }
 };
-
 #endif // __LOGGER_H__
 
 ```
@@ -218,10 +207,8 @@ public:
 
 int main() {
     // 初始化两个日志
-    Singleton<Logger>::instance("sdk").init("./log/spdlog.log", 1024 * 1024 * 6, 4, spdlog::level::debug, spdlog::level::warn, "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v");
-    Singleton<Logger>::instance("app").init("./log/debug.log", 1024 * 1024 * 6, 4, spdlog::level::debug, spdlog::level::warn, "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v");
-    SDK_LOGI("hello sdk");
-    APP_LOGI("hello app");
+    Singleton<Logger>::instance().init("./log/app.log", "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v", 4, 1024 * 1024 * 6, spdlog::level::debug, spdlog::level::warn);
+    LOGI("hello");
     return 0;
 } 
 ```
