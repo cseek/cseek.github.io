@@ -20,11 +20,10 @@ https://github.com/gabime/spdlog
 https://conan.io/center/recipes/spdlog
 ```
 
-## 包装器
+## 单例
 
-singleton.h
 ```c++
-// 单例模板
+// singleton.h
 #ifndef __SINGLETON_H__
 #define __SINGLETON_H__
 
@@ -47,10 +46,11 @@ public:
     }
 };
 #endif // __SINGLETON_H__
+```
 
+## 包装器
 ```c++
-// spdlog.h
-
+// logger.h
 #ifndef __LOGGER_H__
 #define __LOGGER_H__
 
