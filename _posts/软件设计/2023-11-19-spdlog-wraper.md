@@ -50,6 +50,7 @@ public:
 
 ```c++
 // spdlog_wraper.h
+
 #ifndef __LOGGER_H__
 #define __LOGGER_H__
 
@@ -61,91 +62,166 @@ public:
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 #include <memory>
-#include <iostream>
 
-// 将数组转成 16 进制，然后再打印输出，
-// 例如: LOGI("{:X}", TO_HEX(data, len));
+/* 将数组转成 16 进制，然后再打印输出，
+ * 例如: LOGI("{:X}", TO_HEX(data, len));*/
 #define TO_HEX(data, len) spdlog::to_hex(data, data + len)
-#define LOGE(...) Singleton<Logger>::instance().log_error(__VA_ARGS__)
-#define LOGW(...) Singleton<Logger>::instance().log_warn(__VA_ARGS__)
-#define LOGI(...) Singleton<Logger>::instance().log_info(__VA_ARGS__)
-#define LOGD(...) Singleton<Logger>::instance().log_debug(__VA_ARGS__)
-#define LOGC(...) Singleton<Logger>::instance().log_critical(__VA_ARGS__)
-#define LOG_FLUSH(...) Singleton<Logger>::instance().flush()
+#define SDK_LOGE(...) Singleton<Logger>::instance("sdk").log_error(__VA_ARGS__)
+#define SDK_LOGW(...) Singleton<Logger>::instance("sdk").log_warn(__VA_ARGS__)
+#define SDK_LOGI(...) Singleton<Logger>::instance("sdk").log_info(__VA_ARGS__)
+#define SDK_LOGD(...) Singleton<Logger>::instance("sdk").log_debug(__VA_ARGS__)
+#define SDK_LOGC(...) Singleton<Logger>::instance("sdk").log_critical(__VA_ARGS__)
 
-#define LOG_TAG "sdk"                                    // 日志tag
-#define LOG_FILE_SIZE 1024 * 1024 * 6                    // 单个日志文件大小为6MB
-#define LOG_ROTATION 4                                   // 日志文件满4个时开始滚动日志
-#define LOG_FLUSH_ON spdlog::level::info                 // 当打印这个级别日志时flush
-#define LOG_LEVEL spdlog::level::debug                   // 日志级别
-#define LOG_PATTERN "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v" // 日志样式
+#define APP_LOGE(...) Singleton<Logger>::instance("app").log_error(__VA_ARGS__)
+#define APP_LOGW(...) Singleton<Logger>::instance("app").log_warn(__VA_ARGS__)
+#define APP_LOGI(...) Singleton<Logger>::instance("app").log_info(__VA_ARGS__)
+#define APP_LOGD(...) Singleton<Logger>::instance("app").log_debug(__VA_ARGS__)
+#define APP_LOGC(...) Singleton<Logger>::instance("app").log_critical(__VA_ARGS__)
 
 class Logger
 {
 private:
-    std::unique_ptr<spdlog::logger> m_logger; // 日至器
+    std::string m_tag;                        // 日志标签
+    std::unique_ptr<spdlog::logger> m_logger; // 日志器
 
 public:
     Logger(const Logger &) = delete;
     Logger &operator=(const Logger &) = delete;
-    Logger()
+    Logger(const std::string &tag)
+        : m_tag(tag)
     {
+    }
+    ~Logger()
+    {
+        if (m_logger)
+        {
+            m_logger->flush();
+        }
+    }
+
+    bool init(const std::string &name = "./log/spdlog.log",                      // 日志文件名
+              const std::string &pattern = "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v", // 日志样式
+              size_t rotation = 4,                                               // 日志文件满4个时开始滚动日志
+              size_t file_size = 1024 * 1024 * 6,                                // 单个日志文件大小为6MB
+              spdlog::level::level_enum level = spdlog::level::debug,            // 日志级别
+              spdlog::level::level_enum flush_on = spdlog::level::warn)          // 当打印这个级别日志时flush
+
+    {
+        if (m_logger)
+        {
+            return true;
+        }
         auto &&function = [&]()
         {
             auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-            auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(LOG_TAG, LOG_FILE_SIZE, LOG_ROTATION);
+            auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(name, file_size, rotation);
             std::vector<spdlog::sink_ptr> sinks{stdout_sink, rotating_sink};
-            m_logger = std::make_unique<spdlog::logger>(LOG_TAG, sinks.begin(), sinks.end());
-            m_logger->set_pattern(LOG_PATTERN);
-            m_logger->set_level(LOG_LEVEL);
-            m_logger->flush_on(LOG_FLUSH_ON);
+            m_logger = std::make_unique<spdlog::logger>(m_tag, sinks.begin(), sinks.end());
+            m_logger->set_pattern(pattern);
+            m_logger->set_level(level);
+            m_logger->flush_on(flush_on);
         };
         try
         {
             function();
+            return true;
         }
         catch (const std::exception &e)
         {
             SPDLOG_ERROR("Construct logger error: {}", e.what());
+            return false;
         }
     }
 
-    void flush()
+    inline void flush()
     {
-        m_logger->flush();
+        if (m_logger)
+        {
+            m_logger->flush();
+        }
     }
 
     template <typename... Args>
     inline void log_error(const char *fmt, Args... args)
     {
-        m_logger->error(fmt, args...);
+        if (m_logger)
+        {
+            m_logger->error(fmt, args...);
+        }
+        else
+        {
+            SPDLOG_ERROR(fmt, args...);
+        }
     }
 
     template <typename... Args>
     inline void log_warn(const char *fmt, Args... args)
     {
-        m_logger->warn(fmt, args...);
+        if (m_logger)
+        {
+            m_logger->warn(fmt, args...);
+        }
+        else
+        {
+            SPDLOG_WARN(fmt, args...);
+        }
     }
 
     template <typename... Args>
     inline void log_info(const char *fmt, Args... args)
     {
-        m_logger->info(fmt, args...);
+        if (m_logger)
+        {
+            m_logger->info(fmt, args...);
+        }
+        else
+        {
+            SPDLOG_INFO(fmt, args...);
+        }
     }
 
     template <typename... Args>
     inline void log_debug(const char *fmt, Args... args)
     {
-        m_logger->debug(fmt, args...);
+        if (m_logger)
+        {
+            m_logger->debug(fmt, args...);
+        }
+        else
+        {
+            SPDLOG_DEBUG(fmt, args...);
+        }
     }
 
     template <typename... Args>
     inline void log_critical(const char *fmt, Args... args)
     {
-        m_logger->critical(fmt, args...);
+        if (m_logger)
+        {
+            m_logger->critical(fmt, args...);
+        }
+        else
+        {
+            SPDLOG_CRITICAL(fmt, args...);
+        }
     }
 };
 
 #endif // __LOGGER_H__
 
+```
+
+## 使用例子
+
+```c++
+#include "logger.h"
+
+int main() {
+    // 初始化两个日志
+    Singleton<Logger>::instance("sdk").init("./log/spdlog.log", 1024 * 1024 * 6, 4, spdlog::level::debug, spdlog::level::warn, "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v");
+    Singleton<Logger>::instance("app").init("./log/debug.log", 1024 * 1024 * 6, 4, spdlog::level::debug, spdlog::level::warn, "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v");
+    SDK_LOGI("hello sdk");
+    APP_LOGI("hello app");
+    return 0;
+} 
 ```
