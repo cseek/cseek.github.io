@@ -51,10 +51,10 @@ public:
 ## 包装器
 ```c++
 // logger.h
-#ifndef __LOGGER_H__
-#define __LOGGER_H__
+#ifndef __XLOGGER_H__
+#define __XLOGGER_H__
 
-#include "singleton.h"
+#include "utils/singleton.h"
 #include "spdlog/async.h"
 #include "spdlog/fmt/bin_to_hex.h"
 #include "spdlog/sinks/basic_file_sink.h"
@@ -63,25 +63,20 @@ public:
 #include "spdlog/spdlog.h"
 #include <memory>
 
-/* 将数组转成 16 进制，然后再打印输出，
- * 例如: LOGI("{:X}", TO_HEX(data, len));*/
-#define TO_HEX(data, len) spdlog::to_hex(data, data + len)
-#define LOGE(...) Singleton<Logger>::instance().log_error(__VA_ARGS__)
-#define LOGW(...) Singleton<Logger>::instance().log_warn(__VA_ARGS__)
-#define LOGI(...) Singleton<Logger>::instance().log_info(__VA_ARGS__)
-#define LOGD(...) Singleton<Logger>::instance().log_debug(__VA_ARGS__)
-#define LOGC(...) Singleton<Logger>::instance().log_critical(__VA_ARGS__)
+#define XLOGT(fmt, ...) Singleton<Xlogger>::instance().log_trace(fmt, ##__VA_ARGS__)
+#define XLOGD(fmt, ...) Singleton<Xlogger>::instance().log_debug(fmt, ##__VA_ARGS__)
+#define XLOGI(fmt, ...) Singleton<Xlogger>::instance().log_info(fmt, ##__VA_ARGS__)
+#define XLOGW(fmt, ...) Singleton<Xlogger>::instance().log_warn(fmt, ##__VA_ARGS__)
+#define XLOGE(fmt, ...) Singleton<Xlogger>::instance().log_error(fmt, ##__VA_ARGS__)
+#define XLOGC(fmt, ...) Singleton<Xlogger>::instance().log_critical(fmt, ##__VA_ARGS__)
 
-class Logger
+class Xlogger
 {
-private:
-    std::unique_ptr<spdlog::logger> m_logger; // 日志器
-
 public:
-    Logger(const Logger &) = delete;
-    Logger &operator=(const Logger &) = delete;
-    Logger() = default;
-    ~Logger()
+    Xlogger(const Xlogger &) = delete;
+    Xlogger &operator=(const Xlogger &) = delete;
+    Xlogger() = default;
+    ~Xlogger()
     {
         if (m_logger)
         {
@@ -90,7 +85,7 @@ public:
     }
 
     bool init(const std::string &name,                                           // 日志器名称
-              const std::string &file = "./log/spdlog.log",                      // 日志文件名
+              const std::string &file = "./log/app.log",                         // 日志文件名
               const std::string &pattern = "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v", // 日志样式
               size_t rotation = 4,                                               // 日志文件满4个时开始滚动日志
               size_t file_size = 1024 * 1024 * 6,                                // 单个日志文件大小为6MB
@@ -103,10 +98,14 @@ public:
         }
         auto &&function = [&]()
         {
-            auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-            auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(file, file_size, rotation);
+            // 创建sinks
+            auto stdout_sink = std::make_shared<stdout_sink_t>();
+            auto rotating_sink = std::make_shared<rotating_sink_t>(file, file_size, rotation);
             std::vector<spdlog::sink_ptr> sinks{stdout_sink, rotating_sink};
-            m_logger = std::make_unique<spdlog::logger>(name, sinks.begin(), sinks.end());
+            // 创建线程池和异步日志器
+            m_thread_pool = std::make_shared<spdlog::details::thread_pool>(8192, 1);
+            m_logger = std::make_shared<spdlog::async_logger>(name, sinks.begin(), sinks.end(), m_thread_pool, spdlog::async_overflow_policy::block);
+            // 设置日志属性
             m_logger->set_pattern(pattern);
             m_logger->set_level(level);
             m_logger->flush_on(flush_on);
@@ -128,6 +127,19 @@ public:
         if (m_logger)
         {
             m_logger->flush();
+        }
+    }
+
+    template <typename... Args>
+    inline void log_critical(const char *fmt, Args... args)
+    {
+        if (m_logger)
+        {
+            m_logger->critical(fmt, args...);
+        }
+        else
+        {
+            SPDLOG_CRITICAL(fmt, args...);
         }
     }
 
@@ -184,19 +196,26 @@ public:
     }
 
     template <typename... Args>
-    inline void log_critical(const char *fmt, Args... args)
+    inline void log_trace(const char *fmt, Args... args)
     {
         if (m_logger)
         {
-            m_logger->critical(fmt, args...);
+            m_logger->trace(fmt, args...);
         }
         else
         {
-            SPDLOG_CRITICAL(fmt, args...);
+            SPDLOG_TRACE(fmt, args...);
         }
     }
+
+private:
+    using stdout_sink_t = spdlog::sinks::stdout_color_sink_mt;
+    using rotating_sink_t = spdlog::sinks::rotating_file_sink_mt;
+    std::shared_ptr<spdlog::logger> m_logger;
+    std::shared_ptr<spdlog::details::thread_pool> m_thread_pool;
 };
-#endif // __LOGGER_H__
+
+#endif // __XLOGGER_H__
 
 ```
 
@@ -207,8 +226,8 @@ public:
 
 int main() {
     // 初始化两个日志
-    Singleton<Logger>::instance().init("./log/app.log", "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v", 4, 1024 * 1024 * 6, spdlog::level::debug, spdlog::level::warn);
-    LOGI("hello");
+    Singleton<Xlogger>::instance().init("./log/app.log", "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v", 4, 1024 * 1024 * 6, spdlog::level::debug, spdlog::level::warn);
+    XLOGI("hello");
     return 0;
 } 
 ```
