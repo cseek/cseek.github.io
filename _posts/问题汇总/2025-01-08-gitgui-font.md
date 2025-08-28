@@ -11,9 +11,11 @@ tags: [git-gui, git]
 
 ## 解决办法
 
-1. 打开配置文件，添加如下内容
+打开配置文件;
 
 `vim ~/.gitconfig`
+
+添加如下内容, 重启 git gui 即可。
 
 ```bash
 [gui]
@@ -25,4 +27,3 @@ tags: [git-gui, git]
 [http]
         postBuffer = 524288000
 ```
-2. 重启 git gui 即可。
