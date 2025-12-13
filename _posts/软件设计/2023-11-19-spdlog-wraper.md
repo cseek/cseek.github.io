@@ -20,41 +20,12 @@ https://github.com/gabime/spdlog
 https://conan.io/center/recipes/spdlog
 ```
 
-## 单例
-
-```c++
-// singleton.h
-#ifndef __SINGLETON_H__
-#define __SINGLETON_H__
-
-#include <iostream>
-#include <string>
-
-template<class T>
-class Singleton {
-protected:
-    Singleton(const Singleton &) = delete;
-    Singleton &operator=(const Singleton &) = delete;
-    Singleton() = default;
-    ~Singleton() = default;
-
-public:
-    template<typename... Args>
-    static T &instance(Args &&...args) {
-        static T obj(std::forward<Args>(args)...);
-        return obj;
-    }
-};
-#endif // __SINGLETON_H__
-```
-
 ## 包装器
 ```c++
 // logger.h
-#ifndef __XLOGGER_H__
-#define __XLOGGER_H__
+#ifndef XLOGGER_H
+#define XLOGGER_H
 
-#include "utils/singleton.h"
 #include "spdlog/async.h"
 #include "spdlog/fmt/bin_to_hex.h"
 #include "spdlog/sinks/basic_file_sink.h"
@@ -62,17 +33,19 @@ public:
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 #include <memory>
+#include <string>
+#include <functional>
 
-#define XLOGT(fmt, ...) Singleton<Xlogger>::instance().log_trace(fmt, ##__VA_ARGS__)
-#define XLOGD(fmt, ...) Singleton<Xlogger>::instance().log_debug(fmt, ##__VA_ARGS__)
-#define XLOGI(fmt, ...) Singleton<Xlogger>::instance().log_info(fmt, ##__VA_ARGS__)
-#define XLOGW(fmt, ...) Singleton<Xlogger>::instance().log_warn(fmt, ##__VA_ARGS__)
-#define XLOGE(fmt, ...) Singleton<Xlogger>::instance().log_error(fmt, ##__VA_ARGS__)
-#define XLOGC(fmt, ...) Singleton<Xlogger>::instance().log_critical(fmt, ##__VA_ARGS__)
+#define XLOGT(fmt, ...) Xlogger::instance().log_trace(fmt, ##__VA_ARGS__)
+#define XLOGD(fmt, ...) Xlogger::instance().log_debug(fmt, ##__VA_ARGS__)
+#define XLOGI(fmt, ...) Xlogger::instance().log_info(fmt, ##__VA_ARGS__)
+#define XLOGW(fmt, ...) Xlogger::instance().log_warn(fmt, ##__VA_ARGS__)
+#define XLOGE(fmt, ...) Xlogger::instance().log_error(fmt, ##__VA_ARGS__)
+#define XLOGC(fmt, ...) Xlogger::instance().log_critical(fmt, ##__VA_ARGS__)
 
 class Xlogger
 {
-public:
+private:
     Xlogger(const Xlogger &) = delete;
     Xlogger &operator=(const Xlogger &) = delete;
     Xlogger() = default;
@@ -84,6 +57,13 @@ public:
         }
     }
 
+public:
+    using Callback = std::function<void(const std::string &log)>;
+    static Xlogger &instance() {
+        static Xlogger logger;
+        return logger;
+    }
+
     bool init(const std::string &name,                                           // 日志器名称
               const std::string &file = "./log/app.log",                         // 日志文件名
               const std::string &pattern = "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v", // 日志样式
@@ -92,6 +72,7 @@ public:
               spdlog::level::level_enum level = spdlog::level::debug,            // 日志级别
               spdlog::level::level_enum flush_on = spdlog::level::warn)          // 当打印这个级别日志时flush
     {
+        m_level = level;
         if (m_logger)
         {
             return true;
@@ -122,6 +103,11 @@ public:
         }
     }
 
+    void set_callback(const Callback &callback)
+    {
+        m_callback = callback;
+    }
+
     inline void flush()
     {
         if (m_logger)
@@ -137,9 +123,9 @@ public:
         {
             m_logger->critical(fmt, args...);
         }
-        else
+        if (m_callback && (m_level <= spdlog::level::critical))
         {
-            SPDLOG_CRITICAL(fmt, args...);
+            m_callback(spdlog::fmt_lib::format(fmt, args...));
         }
     }
 
@@ -150,9 +136,9 @@ public:
         {
             m_logger->error(fmt, args...);
         }
-        else
+        if (m_callback && (m_level <= spdlog::level::err))
         {
-            SPDLOG_ERROR(fmt, args...);
+            m_callback(spdlog::fmt_lib::format(fmt, args...));
         }
     }
 
@@ -163,9 +149,9 @@ public:
         {
             m_logger->warn(fmt, args...);
         }
-        else
+        if (m_callback && (m_level <= spdlog::level::warn))
         {
-            SPDLOG_WARN(fmt, args...);
+            m_callback(spdlog::fmt_lib::format(fmt, args...));
         }
     }
 
@@ -176,9 +162,9 @@ public:
         {
             m_logger->info(fmt, args...);
         }
-        else
+        if (m_callback && (m_level <= spdlog::level::info))
         {
-            SPDLOG_INFO(fmt, args...);
+            m_callback(spdlog::fmt_lib::format(fmt, args...));
         }
     }
 
@@ -189,9 +175,9 @@ public:
         {
             m_logger->debug(fmt, args...);
         }
-        else
+        if (m_callback && (m_level <= spdlog::level::debug))
         {
-            SPDLOG_DEBUG(fmt, args...);
+            m_callback(spdlog::fmt_lib::format(fmt, args...));
         }
     }
 
@@ -202,9 +188,9 @@ public:
         {
             m_logger->trace(fmt, args...);
         }
-        else
+        if (m_callback && (m_level <= spdlog::level::trace))
         {
-            SPDLOG_TRACE(fmt, args...);
+            m_callback(spdlog::fmt_lib::format(fmt, args...));
         }
     }
 
@@ -213,10 +199,11 @@ private:
     using rotating_sink_t = spdlog::sinks::rotating_file_sink_mt;
     std::shared_ptr<spdlog::logger> m_logger;
     std::shared_ptr<spdlog::details::thread_pool> m_thread_pool;
+    spdlog::level::level_enum m_level;
+    Callback m_callback = nullptr;
 };
 
-#endif // __XLOGGER_H__
-
+#endif // XLOGGER_H
 ```
 
 ## 使用例子
@@ -225,9 +212,57 @@ private:
 #include "logger.h"
 
 int main() {
-    // 初始化两个日志
-    Singleton<Xlogger>::instance().init("./log/app.log", "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v", 4, 1024 * 1024 * 6, spdlog::level::debug, spdlog::level::warn);
-    XLOGI("hello");
+    // 初始化日志器
+    Xlogger::instance().init("app", 
+                             "./log/app.log", 
+                             "[%Y-%m-%d %H:%M:%S.%f] [%^%L%$] %v", 
+                             4, 
+                             1024 * 1024 * 6, 
+                             spdlog::level::debug, 
+                             spdlog::level::warn);
+    
+    // 设置回调函数处理日志
+    Xlogger::instance().set_callback([](const std::string &log) {
+        // 可以在这里处理日志，比如上传到服务器
+    });
+    
+    // 记录日志
+    XLOGI("Application started");
+    XLOGW("This is a warning");
+    XLOGE("This is an error");
+    
+    // 刷新日志缓冲
+    Xlogger::instance().flush();
+    
     return 0;
 } 
 ```
+
+## 核心特性
+
+| 特性 | 说明 |
+|------|------|
+| 单例模式 | 全局唯一实例 |
+| 异步日志 | 线程池处理，不阻塞主线程 |
+| 双输出 | 同时输出到控制台和文件 |
+| 日志轮转 | 自动管理文件大小和数量 |
+| 回调机制 | 支持自定义日志处理 |
+
+## 参数说明
+
+| 参数 | 说明 |
+|------|------|
+| name | 日志器名称 |
+| file | 日志文件路径 |
+| pattern | 输出格式 |
+| rotation | 文件轮转数 |
+| file_size | 单个文件大小限制 |
+| level | 最低日志级别 |
+| flush_on | 触发立即刷新的日志级别 |
+
+## 注意事项
+
+- **线程安全**：`_mt` 后缀表示线程安全的 sink
+- **文件权限**：确保日志目录可写
+- **性能**：异步处理不阻塞主线程
+- **缓冲**：程序退出前调用 `flush()` 确保日志写入
