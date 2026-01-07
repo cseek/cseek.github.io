@@ -66,7 +66,7 @@ public:
             }
         }
         workers_.clear();
-        std::queue<std::functional<void()>> tmp;
+        std::queue<std::function<void()>> tmp;
         tasks_.swap(tmp);
     }
 
