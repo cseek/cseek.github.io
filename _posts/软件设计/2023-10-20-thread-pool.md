@@ -1,5 +1,5 @@
 ---
-title: 使用 c++11 实现一个线程池
+title: 使用 c++ 实现一个精简的线程池
 category: [软件设计]
 tags: [线程池, thread_pool]
 ---
@@ -8,8 +8,12 @@ tags: [线程池, thread_pool]
 {: .prompt-info }
 
 ## 代码实现
+`thread_pool.h`
 
 ```c++
+#ifndef THREAD_POOL_H
+#define THREAD_POOL_H
+
 #include <cstdint>
 #include <vector>
 #include <condition_variable>
@@ -90,4 +94,26 @@ private:
     std::vector<std::thread>          workers_;
     std::queue<std::function<void()>> tasks_;
 };
+#endif // THREAD_POOL_H
+```
+
+## 使用示例
+
+```c++
+#include "thread_pool.h"
+#include <iostream>
+
+int main() {
+    ThreadPool tp;
+    tp.init(1);
+    auto future = tp.submit([]() {
+        std::cout << "thread 1\n";
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+    });
+    future.wait();
+    tp.deinit();
+
+    return 0;
+}
+
 ```
